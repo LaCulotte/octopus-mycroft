@@ -24,6 +24,7 @@ import subprocess
 import mycroft.configuration
 from .log import LOG
 
+import time
 
 def play_audio_file(uri: str, environment=None):
     """Play an audio file.
@@ -105,7 +106,19 @@ def play_wav(uri, environment=None):
     config = mycroft.configuration.Configuration.get()
     play_wav_cmd = config['play_wav_cmdline']
     try:
-        return _play_cmd(play_wav_cmd, uri, config, environment)
+        # f = open("aaaa", "w")
+        # f.write(uri)
+        # f.write("\n")
+        # f.write(str(time.time()))
+        # f.write("\n-------\nuntil : \n")
+        LOG.info(f"Time of play : {time.time()}")
+        res = _play_cmd(play_wav_cmd, uri, config, environment)
+        res.wait()
+
+        # f.write(str(time.time()))
+        # f.write("\n-------\n")
+        # f.close()
+        return res
     except FileNotFoundError as e:
         LOG.error("Failed to launch WAV: {} ({})".format(play_wav_cmd,
                                                          repr(e)))

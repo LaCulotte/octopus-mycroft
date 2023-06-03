@@ -559,6 +559,7 @@ class GoogleCloudStreamingSTT(StreamingSTT):
             self.streaming_config
         )
 
+import socket
 
 class KaldiSTT(STT):
     def __init__(self):
@@ -566,8 +567,26 @@ class KaldiSTT(STT):
 
     def execute(self, audio, language=None):
         language = language or self.lang
-        response = post(self.config.get("uri"), data=audio.get_wav_data())
-        return self.get_response(response)
+        # response = post(self.config.get("uri"), data=audio.get_wav_data())
+        # return self.get_response(response)
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((self.config.get("host"), self.config.get("port")))
+        data: bytes = audio.get_wav_data()
+
+        s.send(data)
+        
+        b_msg = b''
+        while True:
+            chunk = s.recv(4096)
+            if chunk == b'':
+                break
+            b_msg += chunk
+
+        msg = b_msg.decode()
+        full_msg = " ".join( phrase.split("\r")[-1] for phrase in msg.split("\n"))
+
+        return full_msg
 
     def get_response(self, response):
         try:

@@ -70,6 +70,7 @@ name_to_script_path() {
         "audiotest")         _module="mycroft.util.audio_test" ;;
         "wakewordtest")      _module="test.wake_word" ;;
         "enclosure")         _module="mycroft.client.enclosure" ;;
+        "octopus")         _module="mycroft.octopus" ;;
 
         *)
             echo "Error: Unknown name '${1}'"
@@ -137,17 +138,20 @@ launch_background() {
         echo "         8181 with a firewall as appropriate."
     fi
 
+    echo "python3 -m ${_module} $_params >> /var/log/mycroft/${1}.log 2>&1 &"
+
     # Launch process in background, sending logs to standard location
     python3 -m ${_module} "$@" >> "/var/log/mycroft/${1}.log" 2>&1 &
 }
 
 launch_all() {
     echo "Starting all mycroft-core services"
-    launch_background bus
-    launch_background skills
-    launch_background audio
-    launch_background voice
-    launch_background enclosure
+    launch-background bus
+    launch-background skills
+    launch-background audio
+    launch-background voice
+    launch-background enclosure
+    launch-background octopus
 }
 
 check_dependencies() {
@@ -218,6 +222,10 @@ case ${_opt} in
         ;;
     "voice")
         launch_background "${_opt}"
+        ;;
+
+    "octopus")
+        launch-background ${_opt}
         ;;
 
     "debug")

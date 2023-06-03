@@ -95,11 +95,12 @@ fi
 case ${OPT} in
     ""|"all")
         echo "Stopping all mycroft-core services"
-        end_process skills
-        end_process audio
-        end_process speech
-        end_process enclosure
-        end_process messagebus.service
+        end-process skills
+        end-process audio
+        end-process speech
+        end-process enclosure
+        end-process messagebus.service
+        end-process octopus
         ;;
     "bus")
         end_process messagebus.service
@@ -115,6 +116,9 @@ case ${OPT} in
         ;;
     "enclosure")
         end_process enclosure
+        ;;
+    "octopus")
+        end-process enclosure
         ;;
 
     *)

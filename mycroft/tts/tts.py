@@ -135,6 +135,7 @@ class PlaybackThread(Thread):
         If the queue is empty the end_audio() is called possibly triggering
         listening.
         """
+
         while not self._terminated:
             try:
                 (snd_type, data,
@@ -143,6 +144,16 @@ class PlaybackThread(Thread):
                 if not self._processing_queue:
                     self._processing_queue = True
                     self.begin_audio()
+
+                if getattr(self.tts, "send_speech_wave"):
+                    LOG.info("in")
+                    self.tts.send_speech_wave(data)
+                    LOG.info("out")
+
+                    res = self.tts.ntpclient.request('fr.pool.ntp.org', version=3)
+                    t = res.tx_time + res.offset + res.root_delay 
+                    LOG.info(f"REAL TIME OF PLAU {t}")
+
 
                 stopwatch = Stopwatch()
                 with stopwatch:
@@ -479,6 +490,7 @@ class TTS(metaclass=ABCMeta):
                 # TODO 21.08: remove mutation of audio_file.path.
                 returned_file, phonemes = self.get_tts(
                     sentence, str(audio_file.path))
+
                 # Convert to Path as needed
                 returned_file = Path(returned_file)
                 if returned_file != audio_file.path:
@@ -693,11 +705,13 @@ class TTSFactory:
             "module": <engine_name>
         }
         """
+
         config = Configuration.get()
         lang = config.get("lang", "en-us")
         tts_module = config.get('tts', {}).get('module', 'mimic')
         tts_config = config.get('tts', {}).get(tts_module, {})
         tts_lang = tts_config.get('lang', lang)
+
         try:
             if tts_module in TTSFactory.CLASSES:
                 clazz = TTSFactory.CLASSES[tts_module]

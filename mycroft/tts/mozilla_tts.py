@@ -31,11 +31,10 @@ class MozillaTTS(TTS):
         self.type = 'wav'
 
     def get_tts(self, sentence, wav_file):
-        response = requests.get(self.url, params={'text': sentence})
+        response = requests.get(self.url, params={'text': sentence, 'voice': "nanotts:fr-FR", "lang": "fr", "vocoder": "medium", "cache": False})
         with open(wav_file, 'wb') as f:
             f.write(response.content)
         return (wav_file, None)  # No phonemes
-
 
 class MozillaTTSValidator(TTSValidator):
     def __init__(self, tts):
