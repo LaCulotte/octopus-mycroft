@@ -146,12 +146,12 @@ launch_background() {
 
 launch_all() {
     echo "Starting all mycroft-core services"
-    launch-background bus
-    launch-background skills
-    launch-background audio
-    launch-background voice
-    launch-background enclosure
-    launch-background octopus
+    launch_background bus
+    launch_background skills
+    launch_background audio
+    launch_background voice
+    launch_background enclosure
+    launch_background octopus
 }
 
 check_dependencies() {
@@ -225,7 +225,7 @@ case ${_opt} in
         ;;
 
     "octopus")
-        launch-background ${_opt}
+        launch_background ${_opt}
         ;;
 
     "debug")

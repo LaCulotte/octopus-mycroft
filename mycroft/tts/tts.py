@@ -145,14 +145,17 @@ class PlaybackThread(Thread):
                     self._processing_queue = True
                     self.begin_audio()
 
-                if getattr(self.tts, "send_speech_wave"):
-                    LOG.info("in")
-                    self.tts.send_speech_wave(data)
-                    LOG.info("out")
+                LOG.info(str(self.tts))
 
-                    res = self.tts.ntpclient.request('fr.pool.ntp.org', version=3)
-                    t = res.tx_time + res.offset + res.root_delay 
-                    LOG.info(f"REAL TIME OF PLAU {t}")
+                for tts in self.tts:
+                    if getattr(tts, "send_speech_wave", None):
+                        LOG.info("in")
+                        tts.send_speech_wave(data)
+                        LOG.info("out")
+
+                        res = tts.ntpclient.request('fr.pool.ntp.org', version=3)
+                        t = res.tx_time + res.offset + res.root_delay 
+                        LOG.info(f"REAL TIME OF PLAU {t}")
 
 
                 stopwatch = Stopwatch()
